@@ -22,11 +22,11 @@
 
 2. MVC 思想: 是一种公用的思想
 
-*M： 模型
+* M： 模型
 
-*V：视图
+* V：视图
 
-*C：控制器
+* C：控制器
 
 ## Hibernate introduction
 
