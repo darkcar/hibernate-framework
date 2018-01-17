@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+	"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+	
+<hibernate-configuration>
+	<session-factory>
+		<!-- Part 1: DB Information -->
+		<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="hibernate.connection.url">jdbc:mysql://localhost:8889/test</property>
+		<property name="hibernate.connection.username">root</property>
+		<property name="hibernate.connection.password">root123</property>
+		
+		<!-- Part 2: Hibernate Information (Optional) -->
+		<property name="hibernate.show_sql">true</property>
+		<property name="hibernate.format_sql">true</property>
+		<!-- 
+			Hibernate Create table, after we configure the settings
+			update: If no table, create table. 
+		 -->
+		<property name="hibernate.hbm2ddl.auto">update</property>
+		<!-- 
+			db Dialect
+		 -->
+		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+		
+		<!-- Part 3: Including mapping xml -->
+		<mapping resource="com/liyiandxuegang/entity/User.hbm.xml" />
+		
+	</session-factory>
+</hibernate-configuration>

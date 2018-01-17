@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+  
+  
+<hibernate-mapping>
+	<!-- 
+		1. Class Map to Table
+		name: Full path to Entity class
+		table: Table name in DB
+	 -->
+	<class name="com.liyiandxuegang.entity.User" table="t_user">
+		<!-- 2. Map Entity id to Table id -->
+		<!-- 
+			id has two properties:
+			name: Entity id name
+			column: Table column name	
+		 -->
+		<id name="uid" column="uid">
+			<!-- 
+				Increase strategy id by?
+				native: primary key, auto_increment 
+			 -->
+			<generator class="native"></generator>
+		</id>
+		<!-- 3. Map other fields in Entity to Table -->
+		<property name="username" column="username" />
+		<property name="password" column="password" />
+		<property name="address" column="address" />
+	</class>
+</hibernate-mapping>
+    

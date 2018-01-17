@@ -52,7 +52,136 @@ Find the detailed comparison from the picture under /note.
 
 1. Create Hibernate Environment
 
-* import jar files: folder (JPA + Requires) + log4j.jar + mysql-connector-java.jar + 
+* import jar files: folder (JPA + Requires) + log4j.jar + mysql-connector-java.jar + slf4j-api.jar + slf4j-log4j12.jar
+
+* Create Entity Class (JavaBean)
+
+```java
+public class User {
+	/* one unique value */
+	private int uid;
+	private String username;
+	private String password;
+	private String address;
+	public int getUid() {
+		return uid;
+	}
+	public void setUid(int uid) {
+		this.uid = uid;
+	}
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+}
+```
+
+* Create database table (Hibernate has tool to create the table automatically without manually doing that).
+
+* 配置实体类和数据库表一一对应关系（映射关系）
+
+1. Create xml configuration file，实体类所在的包里进行创建，实体类名称.hbm.xml
+
+2. Include hibernate xml dtd. 
+
+```xml
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+```
+
+3. Configure mapping information.
+
+```xml
+<hibernate-mapping>
+	<!-- 
+		1. Class Map to Table
+		name: Full path to Entity class
+		table: Table name in DB
+	 -->
+	<class name="com.liyiandxuegang.entity.User" table="t_user">
+		<!-- 2. Map Entity id to Table id -->
+		<!-- 
+			id has two properties:
+			name: Entity id name
+			column: Table column name	
+		 -->
+		<id name="uid" column="uid">
+			<!-- 
+				Increase strategy id by?
+				native: primary key, auto_increment 
+			 -->
+			<generator class="native"></generator>
+		</id>
+		<!-- 3. Map other fields in Entity to Table -->
+		<property name="username" column="username" />
+		<property name="password" column="password" />
+		<property name="address" column="address" />
+	</class>
+</hibernate-mapping>
+```
+
+4. Create hibernate core configuration file: name and location is fixed. (under src)
+
+* xml header
+
+```xml
+<!DOCTYPE hibernate-configuration PUBLIC
+	"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+```
+
+* hibernate操作过程中，自动加载的文件只有核心配置文件，其他配置文件不会加载。
+
+```xml
+<hibernate-configuration>
+	<session-factory>
+		<!-- Part 1: DB Information -->
+		<property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="hibernate.connection.url">jdbc:mysql://localhost:8889/test</property>
+		<property name="hibernate.connection.username">root</property>
+		<property name="hibernate.connection.password">root123</property>
+		
+		<!-- Part 2: Hibernate Information (Optional) -->
+		<property name="hibernate.show_sql">true</property>
+		<property name="hibernate.format_sql">true</property>
+		<!-- 
+			Hibernate Create table, after we configure the settings
+			update: If no table, create table. 
+		 -->
+		<property name="hibernate.hbm2ddl.auto">update</property>
+		<!-- 
+			db Dialect
+		 -->
+		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+		
+		<!-- Part 3: Including mapping xml -->
+		<mapping resource="com/liyiandxuegang/entity/User.hbm.xml" />
+	</session-factory>
+</hibernate-configuration>
+```
+
+
+
+
+
+
+
+
 
 ## Hibernate configuration 
 
