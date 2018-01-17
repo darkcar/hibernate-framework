@@ -23,7 +23,6 @@
 			db Dialect
 		 -->
 		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
-		
 		<!-- Part 3: Including mapping xml -->
 		<mapping resource="com/liyiandxuegang/entity/User.hbm.xml" />
 		

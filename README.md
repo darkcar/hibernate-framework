@@ -175,17 +175,135 @@ public class User {
 </hibernate-configuration>
 ```
 
+5. Test: Load core setting xml file -> Create SessionFactory -> Create session object -> Open Transaction -> Logic -> Commit -> Close Resources
 
+```java
+@Test
+	public void test() {
+		// 1. Load core xml file, since name and loaction is fixed, so no params needed. 
+		Configuration cfg = new Configuration();
+		cfg.configure();
+		
+		// 2. Create SessionFactory, according to mapping relation, create table in DB.
+		SessionFactory sessionFactory = cfg.buildSessionFactory();
+		
+		// 3. Create session object, like connections in JDBC
+		Session session = sessionFactory.openSession();
+		
+		// 4. Create transaction
+		Transaction transaction = session.beginTransaction();
+		
+		// 5. CRUD
+		// Insert
+		User user = new User();
+		user.setUsername("Frank Wang");
+		user.setPassword("123456");
+		user.setAddress("Canada");
+		// Call session save
+		session.save(user);
+		
+		// 6. Commit transactions
+		transaction.commit();
+		
+		// 7. Close resources
+		session.close();
+		sessionFactory.close();
+	}
+```
 
+## Hibernate configuration files details
 
+## Hibernate Mapping xml (Entity.hbm.xml)
 
+* No requires for filename and location
 
+* Class tag: name property: Entity full path
 
+* Name property values in id tag and property tags should be same as Entity properties.
 
+## Hibernate Core xml (hibernate.cfg.xml)
 
-## Hibernate configuration 
+* All subtags should be under <session-factory>
+
+* Part 1 required, Part 2 optional, Part 3 required.
+
+* File name and location should be fixed. 
 
 ## Hibernate API 
+
+### Configuration
+
+```java
+Configuration cfg = new Configuration();
+cfg.configure();
+```
+
+[Load configuration file] Program will go to src folder, and find "hibernate.cfg.xml" file. Then, load configuration file into Object. 
+
+### SessionFactory (*)
+
+```java
+// What will this do?
+// 1. Connect to db, and create the table, if it is not disabled.  
+// 2. It needs lots of resources.
+// 3. One project, have one sessionFactory object.
+cfg.buildSessionFactory(); 
+```
+
+How to create only one sessionFactory Object
+```java
+// Create util class, and use static code block.
+public class HibernateUtils {
+	private static final Configuration cfg;
+	private static final SessionFactory sessionFactory;
+	// Static, only run once.
+	static {
+		cfg = new Configuration();
+		cfg.configure();
+		sessionFactory = cfg.buildSessionFactory();
+	}
+	// return session factory 
+	public static SessionFactory getSessionFactory() {
+		return sessionFactory;
+	}
+}
+
+```
+
+### Session
+
+1. session类似于jdbc中的connection
+
+2. 调用session里面的方法实现crud的操作。
+	save， update， delete， get
+
+3. session对象是单线程对象， session对象不能公用，只能自己使用。 
+
+### Transaction  
+
+1. Transaction Object: beginTransaction(), 
+
+2. Methods: commit(), rollback();
+
+3. Concept:
+
+原子性，一致性，隔离性，持久性；
+
+## What to do if there is no tips for xml editing?
+
+* Step 1. Open preferences, and search "xml catalog"
+
+* Step 2. Click Add, fill the following information.
+
+1. Location: Find dtd or schema file from local system.
+
+2. Key Type: URI;
+
+3. Key: Copy the url http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd; 
+
+4. Restart Eclipse.
+
+
  
  
  
