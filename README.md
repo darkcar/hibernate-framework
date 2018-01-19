@@ -303,6 +303,43 @@ public class HibernateUtils {
 
 4. Restart Eclipse.
 
+# Chapter 2 Hibernate Advanced
+
+## 实体类编写规范
+
+1. 属性私有化
+
+2. 方法set和get要使用public修饰
+
+3. 实体类有一个属性必须有唯一值。
+
+4. 实体类属性，建议不适应基本数据类型，而使用基本数据对应的包装类
+	
+	* 八个数据基本类型：int-> Integer; char -> Character; double -> Double
+	
+	* why? For example: int score; 
+	
+	- If student got 0, int score = 0; but if the student missed the exam, int score = 0 can not represent the student didn't show up. 
+	
+	- But if Integer score = 0, means student got 0; If no show, then Integer score = null; 
+	
+## Hibernate 主键生成策略
+
+```xml
+	<generator class="native"></generator>
+```
+
+### native
+
+根据底层数据库对自动生成表示符的能力来选择identity，sequence，hilo三种生成器的一种。
+
+### uuid
+
+Hibernate采用128为的UUID算法来生成标识符。该算法能够在网络环境中生成唯一的字符串标识符，其UUID被编码为一个长度为32位的十六进制字符串。
+这种策略不流行，因为字符串类型的主键比整数类型的主键占用更多的数据库空间。适用于代理主键。
+
+
+
 
  
  
