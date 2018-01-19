@@ -511,9 +511,11 @@ User [uid=6, username=Liyi, password=123456, address=Canada]
 User [uid=6, username=Liyi, password=123456, address=Canada]s
  ```
  
- It only do the query once.  10
+ It only do the query once.  
  
+ See below how does it work? 
  
+  ![Including images for hibernate first-level cache](https://raw.githubusercontent.com/darkcar/hibernate-framework/master/note/Hibernate-first-level-cache.jpeg)
  
  
  
