@@ -130,4 +130,29 @@ public class UserTest {
 		session.close();
 		sessionFactory.close();
 	}
+	
+	/* Verify First Level Cache */
+	@Test
+	public void testCache() {
+		
+		// Call sessionFactory
+				SessionFactory sessionFactory = HibernateUtils.getSessionFactory();
+				Session session = sessionFactory.openSession();
+				// Open transactions
+				Transaction transaction = session.beginTransaction();
+				
+				// query 
+				User user1 = session.get(User.class, 6);
+				System.out.println(user1);
+				
+				User user2 = session.get(User.class, 6);
+				System.out.println(user2);
+				
+				// Commit
+				transaction.commit();
+				// Close
+				session.close();
+				sessionFactory.close();
+		
+	}
 }

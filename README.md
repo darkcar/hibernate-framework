@@ -464,6 +464,57 @@ session.save(user);
  session.saveOrUpdate(user);
  ```
  
+ ## Hibernate First level cache
+ 
+ ### 什么是缓存？
+ 
+ 数据存到数据库，而数据库本身是一个文件系统，Java中要使用流的方式来操作效率不是很高。
+ 
+ - 我们可以把数据存到内存中，不需要流方式读取，直接读取内存中数据。
+ 
+ - 把数据放到内存中，提高读取效率
+ 
+ ### Hibernate Cache
+ 
+ 1. Hibernate框架中提供了很多优化方式，hibernate的缓存就是一个优化方式。
+ 
+ 2. 缓存特点：
+ 
+ * Hibernate first-level cache: 默认是开启状态；使用范围是session范围；存储的数据必须为持久态数据；
+ 
+ * Hibernate second-level cache: 二级缓存已经被redis替代。需要配置来打开，使用范围是sessionFactory范围。
+ 
+ ### Example (Verify first level cache)
+ 
+ ```java
+ User user1 = session.get(User.class, 6);
+ System.out.println(user1);
+ 
+ User user2 = session.get(User.class, 6);
+ System.out.println(user2);
+ ```
+ 
+ The second time, hibernate won't query db, and the console prints the message below:
+ 
+ ```txt
+ Hibernate: 
+    select
+        user0_.uid as uid1_0_0_,
+        user0_.username as username2_0_0_,
+        user0_.password as password3_0_0_,
+        user0_.address as address4_0_0_ 
+    from
+        t_user user0_ 
+    where
+        user0_.uid=?
+User [uid=6, username=Liyi, password=123456, address=Canada]
+User [uid=6, username=Liyi, password=123456, address=Canada]s
+ ```
+ 
+ It only do the query once.  10
+ 
+ 
+ 
  
  
  
