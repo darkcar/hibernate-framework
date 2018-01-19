@@ -20,6 +20,10 @@
 
 * Dao － Hibernate 框架
 
+A comparison between JDBC and Hibernate:
+ 
+ ![comparison between JDBC and Hibernate](https://github.com/darkcar/hibernate-framework/blob/master/note/hibernate-jdbc.jpeg?raw=true)
+
 2. MVC 思想: 是一种公用的思想
 
 * M： 模型
