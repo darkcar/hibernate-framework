@@ -521,6 +521,16 @@ User [uid=6, username=Liyi, password=123456, address=Canada]s
  
   ![Including images for hibernate first-level cache](https://raw.githubusercontent.com/darkcar/hibernate-framework/master/note/Hibernate-first-level-cache.jpeg)
  
+ ### Hibernate cache feature
+ 
+ 1. 持久态实体，会自动更新数据库
+ 
+ ```java
+ User user = session.get(User.class, 1);
+ user.setUsername("FrankandLiyi");
+ ```
+ 
+ We don't need to call function session.update(user), the data in db has been updated.  (11)
  
  
  

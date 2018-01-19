@@ -155,4 +155,29 @@ public class UserTest {
 				sessionFactory.close();
 		
 	}
+	
+	/* First-level cache feature */
+	@Test
+	public void testCacheFeature() {
+		
+		// Call sessionFactory
+				SessionFactory sessionFactory = HibernateUtils.getSessionFactory();
+				Session session = sessionFactory.openSession();
+				// Open transactions
+				Transaction transaction = session.beginTransaction();
+				
+				// query ： 持久态会自动更新数据
+				User user = session.get(User.class, 6);
+				user.setUsername("LiyiandFrank");
+				//	session.saveOrUpdate(user);
+				
+				
+				// Commit
+				transaction.commit();
+				// Close
+				session.close();
+				sessionFactory.close();
+		
+	}
+	
 }
