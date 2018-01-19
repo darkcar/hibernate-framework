@@ -1,6 +1,7 @@
 package com.liyiandxuegang.entity;
 
 public class User {
+	// private String uuid;
 	/* one unique value */
 	private int uid;
 	private String username;
@@ -29,5 +30,10 @@ public class User {
 	}
 	public void setAddress(String address) {
 		this.address = address;
+	}
+	@Override
+	public String toString() {
+		return "User [uid=" + uid + ", username=" + username + ", password="
+				+ password + ", address=" + address + "]";
 	}
 }

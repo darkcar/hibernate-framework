@@ -326,7 +326,7 @@ public class HibernateUtils {
 ## Hibernate 主键生成策略
 
 ```xml
-	<generator class="native"></generator>
+<generator class="native"></generator>
 ```
 
 ### native
@@ -338,14 +338,131 @@ public class HibernateUtils {
 Hibernate采用128为的UUID算法来生成标识符。该算法能够在网络环境中生成唯一的字符串标识符，其UUID被编码为一个长度为32位的十六进制字符串。
 这种策略不流行，因为字符串类型的主键比整数类型的主键占用更多的数据库空间。适用于代理主键。
 
+```java
+private String uuid;
+```
+ 
+ and in xml settings, we need to change id generator by uuid
+ 
+ ```xml
+ <generator class="uuid"></generator>
+ ```
+ 
+### Operation for Entity
 
+1. Call method save of session
 
+```java
+session.save(user);
+```
 
+2. Query by Id: call method of get in session
+
+```java
+	@Test
+	public void test1() {
+		// Call sessionFactory
+		SessionFactory sessionFactory = HibernateUtils.getSessionFactory();
+		Session session = sessionFactory.openSession();
+		//Open transactions
+		Transaction transaction = session.beginTransaction();
+		// Query by id
+		User user = session.get(User.class, 1);
+		System.out.println(user);
+		// Commit 
+		transaction.commit();
+		// Close
+		session.close();
+		sessionFactory.close();
+	}
+```
+
+3. Update: First query and then update
+
+```java
+User user = session.get(User.class, 1);
+user.setPassowrd("123");
+session.update(user); // session.save(user); 
+```
+
+4. Delete: 
+
+* Query get the Entity instance, and delete (recommend method)
+
+```java
+User user = session.get(User.class, 1);
+session.delete(user);
+```
+
+* Create Entity instance, and delete (Not recommended)
+
+```java
+User user = new User();
+user.setUid(1);
+session.delete(user);
+```
+
+### Status of Entity
+
+1. 瞬时态: 对象中没有id值，对象和session没有关联。主要用来save操作。
+
+```java
+User user = new User();
+user.setUsername("Frank");
+user.setPassword("*sdfsfasww");
+user.setAddress("Earch");
+session.save(user);
+```
+
+2. 持久态：对象中有id值。并且和session有关联。
+
+```java
+User user = session.get(User.class, 1);
+```
+
+3. 托管态: 对象有id值，但是对象跟session无关系。 （使用的不多）
+
+```java
+User user=  new User();
+user.setUid(3);
+session.save(user);
+```
  
+ ## Other methods
  
+ ### saveOrUpdate() 
  
+ Add new record
  
+ ```java
+ User user = new User();
+ user.setUsername("jack");
+ user.setPassword("529");
+ user.setAddress("Korean");
  
+ session.saveOrUpdate(user);
+ ```
+ 
+ Update record
+ 
+ ```java
+ User user = new User();
+ user.setUid(6);
+ user.setUsername("Rose");
+ user.setPassword("12312");
+ user.setAddress("Harbour Landing");
+ 
+ session.saveOrUpdate(user);
+ ```
+ 
+ update record
+ 
+ ```java
+ User user = session.get(User.class, 7);
+ user.setUsername("LiLei");
+ 
+ session.saveOrUpdate(user);
+ ```
  
  
  

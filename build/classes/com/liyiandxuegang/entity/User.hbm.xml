@@ -17,13 +17,16 @@
 			name: Entity id name
 			column: Table column name	
 		 -->
-		<id name="uid" column="uid">
+		<id name="uid" column="uid"> 
 			<!-- 
 				Increase strategy id by?
 				native: primary key, auto_increment 
 			 -->
-			<generator class="native"></generator>
+			<generator class="native"></generator> 
 		</id>
+		<!-- <id name="uuid" column="uuid">
+			<generator class="uuid"></generator>
+		</id> -->
 		<!-- 3. Map other fields in Entity to Table -->
 		<property name="username" column="username" />
 		<property name="password" column="password" />
