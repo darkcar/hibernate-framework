@@ -536,9 +536,42 @@ User [uid=6, username=Liyi, password=123456, address=Canada]s
  
  ![update-db](https://raw.githubusercontent.com/darkcar/hibernate-framework/master/note/how-to-update-db.png)
  
+  ## Hibernate Transactions
+  
+  ### Concept
+  
+  ### Characters
+  
+  ### 不考虑隔离性问题，会产生的问题：
+  
+  1. 脏读； 2. 不可重复读； 3. 虚读
+  
+ ### 设置事务的隔离级别：
  
+ ```xml
+ hibernate.connect.isolation = 4
+ 1 - Read uncommited isolation
+ 2 - Read committed isolation
+ 4 - Repeatable read isolation
+ 8 - Serializable isolcaiton
+
+<property name="hibernate.connection.isolcation">4</property>
+ ```
  
+ ## Hibernate transaction format code
  
+ 1. code
+ 
+ ```java
+ try {
+ 	// open transaction 
+ 	// commit transaction
+ } catch() {
+	// rollback transcation 
+ } finally {
+ 	// close transaction
+ }
+ ```
  
  
  

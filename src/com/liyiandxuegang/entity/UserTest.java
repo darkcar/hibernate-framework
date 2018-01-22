@@ -180,4 +180,34 @@ public class UserTest {
 		
 	}
 	
+	@Test
+	public void testStandard() {
+		SessionFactory sessionFactory = null;
+		Session session = null;
+		Transaction transaction = null;
+		
+		try {
+			sessionFactory = HibernateUtils.getSessionFactory();
+			session = sessionFactory.openSession();
+			// open transaction
+			transaction = session.beginTransaction();
+			
+			User user = new User();
+			user.setUsername("Little Horse");
+			user.setPassword("123");
+			user.setAddress("American");
+			session.save(user);
+			int i = 10 / 0;
+			// commit transactions
+			transaction.commit();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			transaction.rollback();
+		} finally {
+			session.close();
+			sessionFactory.close();
+		}
+	}
+	
 }
