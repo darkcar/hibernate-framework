@@ -534,6 +534,7 @@ User [uid=6, username=Liyi, password=123456, address=Canada]s
  
  How it works?
  
+ ![update-db](https://raw.githubusercontent.com/darkcar/hibernate-framework/master/note/how-to-update-db.png)
  
  
  
