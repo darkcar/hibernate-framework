@@ -527,10 +527,14 @@ User [uid=6, username=Liyi, password=123456, address=Canada]s
  
  ```java
  User user = session.get(User.class, 1);
- user.setUsername("FrankandLiyi");
+ user.setUsername("FrankandLiyi"); // data will be updated automatically. 
  ```
  
- We don't need to call function session.update(user), the data in db has been updated.  (11)
+ We don't need to call function session.update(user), the data in db has been updated.
+ 
+ How it works?
+ 
+ 
  
  
  
