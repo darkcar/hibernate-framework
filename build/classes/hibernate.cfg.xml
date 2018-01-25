@@ -14,6 +14,9 @@
 		<!-- Part 2: Hibernate Information (Optional) -->
 		<property name="hibernate.show_sql">true</property>
 		<property name="hibernate.format_sql">true</property>
+		<!-- 配置与本地线程绑定的session -->
+		<property name="hibernate.current_session_context_class">thread</property>
+		
 		<!-- 
 			Hibernate Create table, after we configure the settings
 			update: If no table, create table. 
@@ -25,6 +28,9 @@
 		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
 		<!-- Part 3: Including mapping xml -->
 		<mapping resource="com/liyiandxuegang/entity/User.hbm.xml" />
+		
+		
+		
 		
 	</session-factory>
 </hibernate-configuration>

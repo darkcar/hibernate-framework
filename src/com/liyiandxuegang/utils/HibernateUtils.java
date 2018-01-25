@@ -1,5 +1,6 @@
 package com.liyiandxuegang.utils;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
@@ -16,6 +17,12 @@ public class HibernateUtils {
 	public static SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
+	
+	// return local session 
+	public static Session getSessionObject() {
+		return sessionFactory.getCurrentSession();
+	}
+	
 	
 	public static void main(String[] args) {
 		

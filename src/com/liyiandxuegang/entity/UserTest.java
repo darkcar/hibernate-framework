@@ -113,7 +113,7 @@ public class UserTest {
 	public void test4() {
 		// Call sessionFactory
 		SessionFactory sessionFactory = HibernateUtils.getSessionFactory();
-		Session session = sessionFactory.openSession();
+		Session session = HibernateUtils.getSessionObject();
 		// Open transactions
 		Transaction transaction = session.beginTransaction();
 		
@@ -127,8 +127,8 @@ public class UserTest {
 		// Commit
 		transaction.commit();
 		// Close
-		session.close();
-		sessionFactory.close();
+		// session.close();
+		// sessionFactory.close();
 	}
 	
 	/* Verify First Level Cache */
@@ -185,22 +185,20 @@ public class UserTest {
 		SessionFactory sessionFactory = null;
 		Session session = null;
 		Transaction transaction = null;
-		
 		try {
 			sessionFactory = HibernateUtils.getSessionFactory();
 			session = sessionFactory.openSession();
-			// open transaction
 			transaction = session.beginTransaction();
 			
+			// Add new user
 			User user = new User();
-			user.setUsername("Little Horse");
+			user.setUsername("Add new user");
 			user.setPassword("123");
-			user.setAddress("American");
+			user.setAddress("CANADA");
+			
 			session.save(user);
 			int i = 10 / 0;
-			// commit transactions
 			transaction.commit();
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 			transaction.rollback();
@@ -210,4 +208,15 @@ public class UserTest {
 		}
 	}
 	
+	// hql query
 }
+
+
+
+
+
+
+
+
+
+

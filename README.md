@@ -563,19 +563,103 @@ User [uid=6, username=Liyi, password=123456, address=Canada]s
  1. code
  
  ```java
+ SessionFactory sessionFactory = null;
+ Session session = null;
+ Transaction transaction = null;
  try {
  	// open transaction 
  	// commit transaction
+ 	sessionFactory = HibernateUtil.getSessionFactory();
+ 	session = sessionFactory.openSession();
+ 	transaction = session.beginTransaction();
+ 	
+ 	// you code is here
+ 	
+ 	transaction.commit();
+ 	
  } catch() {
-	// rollback transcation 
+	// rollback transcation
+	transaction.rollback(); 
  } finally {
  	// close transaction
+ 	session.close();
+ 	sessionFactory.close();
  }
  ```
  
+ ## Session 
  
+ 1. session is similar to JDBC connection. 
  
+ 2. Bind to local thred.
  
+ * Add to core configuration file:
+ 
+ ```xml
+ <!-- 配置与本地线程绑定的session -->
+<property name="hibernate.current_session_context_class">thread</property>
+ ``` 
+ 
+ * Get local session method
+ 
+ ```java
+ // retur local thread
+ public static Session getSessionObj() {
+ 	return sessionFactory.getCurrentSession();
+ }
+ ```
+ 
+ * No need to close the session if it is defined by this way. 
+ 
+ ## Hibernate API 
+ 
+ ### Query 
+ 
+ No need to write SQL statement, but you need hql statement.  Hibernate query language.
+ 
+ HQL VS SQL? 
+ 
+ - sql works directly on table and talbe fields
+ 
+ - hql works on Entity class and Entity properties
+ 
+ * How to use? hql
+ 
+ 1. Create Query object
+ 
+ 2. Class query method and return the result.
+ 
+ * code 
+ 
+ ```java
+ Query query = session.createQuery("from User");
+ // get all user list
+ List<User> userList = query.list();
+ for(User user : userList) {
+ 	System.out.println(user);
+ }
+ ```
+ 
+ ### Criteria
+ 
+ Code shows below:  
+ 
+ ```java
+ Criteria criteria = session.createCriteria(User.class);
+ List<User> userList = criteria.list();
+ ```
+ 
+ ### SQLQuery
+ 
+ 1. Sometimes, we have to call sql statement. 
+ 
+  ```java
+  SQLQuery sqlQuery = session.createSQLQuery("SELECT * FROM t_user");
+  sqlQuery.addEntity(User.class);
+  List<User> userList = sqlQuery.list();
+  ```
+  
+  
  
  
  
