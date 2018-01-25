@@ -673,7 +673,7 @@ User [uid=6, username=Liyi, password=123456, address=Canada]s
   
   * 创建一个第三张表，来维护两者之间的关系
 
-	
+	![How to manage many to many](https://github.com/darkcar/hibernate-framework/blob/master/note/manytomany.jpeg?raw=true)
   
   3. One to Many
   		
