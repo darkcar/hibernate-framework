@@ -659,6 +659,27 @@ User [uid=6, username=Liyi, password=123456, address=Canada]s
   List<User> userList = sqlQuery.list();
   ```
   
+  # Chapter 3 Hibernate Mapping
+  
+  ## Table to Table Relations
+  
+  1. One to one
+  
+  * One husband & one wife
+  
+  2. Many to Many
+  
+  * example: Order & Prods 
+  
+  * 创建一个第三张表，来维护两者之间的关系
+
+	
+  
+  3. One to Many
+  		
+  * example: Categorizations & Prods;
+  
+  * Customer & Contact
   
  
  
