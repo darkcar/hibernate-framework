@@ -1169,8 +1169,29 @@ Role role = session.get(Role.class, 3);
 user.getSetRoles().remove(role);
  ```
  
+ # Chapter 4 Hibernate Query
  
+ ## 1. Object naviation query 对象导航查询
  
+1. 根据id查询某个客户，再查询这个客户里面所有的数据
+
+
+
+ ## 2. OID query
+
+1. 根据id查询某一条记录，返回对象
+
+ ## 3. hql query
+
+1. Query对象，写hql语句实现查询
+ 
+ ## 4. QBC query
+
+1. Criteria 对象
+ 
+ ## 5. local sql query
+
+1. SQLQuery对象，使用普通sql实现查询 
  
  
  
