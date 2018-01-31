@@ -996,9 +996,94 @@ Hibernate:
  
  ```
  
+  ### 多对多级连操作
+ 
+ 1. 多对多的配置
+ 
+实例：用户和角色演示
+
+第一步： 创建实体类，用户和角色
+
+第二步：让两个实体类相互表示
+
+* 一个用户里面有多个角色，使用set集合, User.hbm.xml
+
+```xml
+<hibernate-mapping>
+ 	<class name="com.liyiandxuegang.manytomany.User" table="t_user">
+ 		<id name="user_id" column="user_id">
+ 			<generator class="native"></generator>
+ 		</id>
+ 		<property name="user_name" column="user_name" />
+ 		<property name="user_password" column="user_password" />
+ 		
+ 		<!-- 
+ 			在用户里面表示所有角色，使用set标签
+ 				name属性：角色set集合的名称
+ 				table属性：第三张表
+ 		 -->
+ 		<set name="setRoles" table="t_userrole">
+ 			<!-- 
+ 				配置当前映射文件在第三张表中外键的名称
+ 			 -->
+ 			<key column="userid" />
+ 			<!-- column表示角色在第三张表中外键的名称 -->
+ 			<many-to-many class="com.liyiandxuegang.manytomany.Role" column="roleid" />
+ 		</set>
+ 	</class>
+ </hibernate-mapping>
+```
+
+* 一个角色有多个用户，使用set集合, Role.hbm.xml
+
+```xml
+ <hibernate-mapping>
+ 	<class name="com.liyiandxuegang.manytomany.Role" table="t_role">
+ 		<id name="role_id" column="role_id">
+ 			<generator class="native"></generator>
+ 		</id>
+ 		<property name="role_name" column="role_name" />
+ 		<property name="role_memo" column="role_memo" />
+		
+		<set name="setUsers" table="t_userrole">
+			<key column="roleid" />
+			<many-to-many class="com.liyiandxuegang.manytomany.User" column="userid"/>
+		</set>
+ 	</class>
+ </hibernate-mapping>
+```
+
+第三步：配置映射关系
+ 
+ 第四步：在核心配置文件中，引入映射文件
+ 
+ ```xml
+ <mapping resource="com/liyiandxuegang/manytomany/User.hbm.xml"/>
+<mapping resource="com/liyiandxuegang/manytomany/Role.hbm.xml"/>
+ ```
+ 
+ 测试: how to create table t_userrole
+ 
+ ```java
+ /* 
+ CREATE TABLE `t_userrole` (
+  `userid` int(11) NOT NULL,
+  `roleid` int(11) NOT NULL,
+  PRIMARY KEY (`roleid`,`userid`),
+  KEY `FK726f9j5a1sy5ul99knaue6fvm` (`userid`),
+  CONSTRAINT `FK726f9j5a1sy5ul99knaue6fvm` FOREIGN KEY (`userid`) REFERENCES `t_user` (`user_id`),
+  CONSTRAINT `FK9a4q7igohl5jgv9b2afoh9sf3` FOREIGN KEY (`roleid`) REFERENCES `t_role` (`role_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+ */
+ ```
+ 
+ 2. 多对多的保存
  
  
  
+ 3. 多对多删除
+ 
+ 4. 维护第三张表
  
  
  

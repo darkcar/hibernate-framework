@@ -30,5 +30,7 @@
 		<mapping resource="com/liyiandxuegang/entity/User.hbm.xml" />
 		<mapping resource="com/liyiandxuegang/newentity/Customer.hbm.xml"/>
 		<mapping resource="com/liyiandxuegang/newentity/LinkMan.hbm.xml"/>
+		<mapping resource="com/liyiandxuegang/manytomany/User.hbm.xml"/>
+		<mapping resource="com/liyiandxuegang/manytomany/Role.hbm.xml"/>
 	</session-factory>
 </hibernate-configuration>
