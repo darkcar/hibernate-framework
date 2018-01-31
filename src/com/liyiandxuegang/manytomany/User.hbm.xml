@@ -16,7 +16,7 @@
  				name属性：角色set集合的名称
  				table属性：第三张表
  		 -->
- 		<set name="setRoles" table="t_userrole">
+ 		<set name="setRoles" table="t_userrole" cascade="save-update">
  			<!-- 
  				配置当前映射文件在第三张表中外键的名称
  			 -->
