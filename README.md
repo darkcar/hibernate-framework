@@ -703,12 +703,298 @@ User [uid=6, username=Liyi, password=123456, address=Canada]s
  
  - 在客户映射文件中，表示所有联系人
  
+ ```xml
+ 	<!-- 
+ 			表示所有联系人， 使用set标签
+ 			使用set标签表示所有联系人
+ 			set标签里面有name属性：
+ 				属性值写在客户实体类里面表示联系人的set集合名称
+ 		-->
+ 		<set name="setLinkMans">
+ 			<!-- 
+ 				hibernate中，双向维护外健，在一和多的地方都需要配置外健。 
+ 				key中column值就是外键名称。
+ 			-->
+ 			<key column="clid" />
+ 			<one-to-many class="com.liyiandxuegang.newentity.LinkMan"/>
+ 		</set>
+ ```
+
  - 在联系人映射文件中，表示所属客户
  
+ ```xml
+	 <!-- 
+			表示联系人所属的关系
+				name: 因为在联系人实体类使用customer对象表示，写customer名称
+				class: customer全路径
+				column: 外键名称
+		 -->
+		<many-to-one name="customer" class="com.liyiandxuegang.newentity.Customer" column="clid" />
+ ```
  
+ - Include to core hibernate settings
+ 
+ ```xml
+<mapping resource="com/liyiandxuegang/newentity/Customer.hbm.xml"/>
+<mapping resource="com/liyiandxuegang/newentity/LinkMan.hbm.xml"/> 
+ ```
+
+Test it, and you will find there are two tables created in db. 
+
  ### 一对多级连操作
  
+ 1. 级联保存：
+
+ 添加一个客户，为这个客户添加多个联系人
  
+实现：添加一个客户，为这个客户添加一个联系人
+
+Solution 1: 
+
+```java
+			// Add one customer and one link man
+			// 1. Create customer and linkman
+			Customer customer = new Customer();
+			customer.setCustName("SGI");
+			customer.setCustLevel("vip");
+			customer.setCustMobile("306-581-8888");
+			customer.setCustPhone("911");
+			customer.setCustSource("Internet");
+			
+			LinkMan linkMan = new LinkMan();
+			linkMan.setLkm_name("Frank");
+			linkMan.setLkm_gender("Male");
+			linkMan.setLkm_phone("8384");
+			
+			// 2. Create the connection between customer and linkman
+			// 2.1 Customer and linkman
+			customer.getSetLinkMans().add(linkMan);
+			// 2.2 Linkman and customer
+			linkMan.setCustomer(customer);
+			
+			// 3. Save to db
+			session.save(customer);
+			session.save(linkMan);
+```
+ 
+ Solution 2
+ 
+ 一般是根据客户添加联系人：
+ 
+ 第一步： 在客户映射文件中进行配置
+ 
+ ```xml
+ <!--Add cascade attribute to set tag-->
+ <set name="setLinkMans" cascade="save-update">
+ ```
+ 
+ 第二步： 创建客户和联系人对象，只需要把联系人放到客户里面就可以了。
+ 
+ 第三步：只需要保存客户就行了。
+ 
+ ```java
+	@Test
+	public void testAdd2() {
+		SessionFactory sessionFactory = null;
+		Session session = null;
+		Transaction transaction = null;
+		try {
+			sessionFactory = HibernateUtils.getSessionFactory();
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
+			
+			// Add one customer and one link man
+			// 1. Create customer and linkman
+			Customer customer = new Customer();
+			customer.setCustName("SGI CANADA");
+			customer.setCustLevel("Normal");
+			customer.setCustMobile("306-581-8080");
+			customer.setCustPhone("911");
+			customer.setCustSource("Book");
+			
+			LinkMan linkMan = new LinkMan();
+			linkMan.setLkm_name("Lee");
+			linkMan.setLkm_gender("FeMale");
+			linkMan.setLkm_phone("88888888");
+			
+			// 2. Create the connection between customer and linkman
+			customer.getSetLinkMans().add(linkMan);
+			
+			// 3. Save to db
+			session.save(customer);
+			
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+		} finally {
+			session.close();
+			sessionFactory.close();
+		}
+	}
+ ```
+ 
+ 2. 级连删除
+ 
+ 删除一个客户，把相对应的联系人也删除
+ 
+ 需求：删除一个客户，并且把客户里面所有的联系人删除
+ 
+ 第一步：在客户映射文件set标签中，进行配置
+ 
+ ```xml
+ <set name="setLinkMans" cascade="save-update, delete"> 
+ ```
+ 
+ 第二步：删除
+ 
+ ```java
+ // delete the customer
+Customer customer = session.get(Customer.class, 3);
+session.delete(customer);
+
+/*
+删除步骤：
+1. 查询客户
+2. 根据外键值，查询联系人
+3. 设置联系人的外键值为null
+4. 删除联系人
+5. 删除客户
+
+Hibernate: 
+    select
+        customer0_.cid as cid1_0_0_,
+        customer0_.custName as custName2_0_0_,
+        customer0_.custLevel as custLeve3_0_0_,
+        customer0_.custSource as custSour4_0_0_,
+        customer0_.custPhone as custPhon5_0_0_,
+        customer0_.custMobile as custMobi6_0_0_ 
+    from
+        t_customer customer0_ 
+    where
+        customer0_.cid=?
+Hibernate: 
+    select
+        setlinkman0_.clid as clid5_1_0_,
+        setlinkman0_.lkm_id as lkm_id1_1_0_,
+        setlinkman0_.lkm_id as lkm_id1_1_1_,
+        setlinkman0_.lkm_name as lkm_name2_1_1_,
+        setlinkman0_.lkm_gender as lkm_gend3_1_1_,
+        setlinkman0_.lkm_phone as lkm_phon4_1_1_,
+        setlinkman0_.clid as clid5_1_1_ 
+    from
+        t_linkman setlinkman0_ 
+    where
+        setlinkman0_.clid=?
+Hibernate: 
+    update
+        t_linkman 
+    set
+        clid=null 
+    where
+        clid=?
+Hibernate: 
+    delete 
+    from
+        t_linkman 
+    where
+        lkm_id=?
+Hibernate: 
+    delete 
+    from
+        t_customer 
+    where
+        cid=?
+*/
+
+ ```
+ 
+ 3. 一对多修改操作
+ 
+ ```java
+ 	@Test
+	public void testupdate() {
+		SessionFactory sessionFactory = null;
+		Session session = null;
+		Transaction transaction = null;
+		try {
+			sessionFactory = HibernateUtils.getSessionFactory();
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
+			
+			// get linkman,
+			Customer customer = session.get(Customer.class, 1);
+			LinkMan linkMan = session.get(LinkMan.class, 2);
+			// Set persistence value 
+			customer.getSetLinkMans().add(linkMan);
+			linkMan.setCustomer(customer);
+			
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+		} finally {
+			session.close();
+			sessionFactory.close();
+		}
+	}
+ ```
+ 
+ 因为hibernate双向维护外健，在客户和联系人里面都需要维护外键，修改客户时，修改一次外键，而修改联系人时，外键被修改了又一次。这样会造成资源浪费
+ 
+ 解决：让客户这方放弃外健的维护。
+ 
+ ```xml
+ <set name="setLinkMans" cascade="save-update, delete" inverse="true">
+ <!--
+ Only one time update.
+ Hibernate: 
+    select
+        customer0_.cid as cid1_0_0_,
+        customer0_.custName as custName2_0_0_,
+        customer0_.custLevel as custLeve3_0_0_,
+        customer0_.custSource as custSour4_0_0_,
+        customer0_.custPhone as custPhon5_0_0_,
+        customer0_.custMobile as custMobi6_0_0_ 
+    from
+        t_customer customer0_ 
+    where
+        customer0_.cid=?
+Hibernate: 
+    select
+        linkman0_.lkm_id as lkm_id1_1_0_,
+        linkman0_.lkm_name as lkm_name2_1_0_,
+        linkman0_.lkm_gender as lkm_gend3_1_0_,
+        linkman0_.lkm_phone as lkm_phon4_1_0_,
+        linkman0_.clid as clid5_1_0_ 
+    from
+        t_linkman linkman0_ 
+    where
+        linkman0_.lkm_id=?
+Hibernate: 
+    select
+        setlinkman0_.clid as clid5_1_0_,
+        setlinkman0_.lkm_id as lkm_id1_1_0_,
+        setlinkman0_.lkm_id as lkm_id1_1_1_,
+        setlinkman0_.lkm_name as lkm_name2_1_1_,
+        setlinkman0_.lkm_gender as lkm_gend3_1_1_,
+        setlinkman0_.lkm_phone as lkm_phon4_1_1_,
+        setlinkman0_.clid as clid5_1_1_ 
+    from
+        t_linkman setlinkman0_ 
+    where
+        setlinkman0_.clid=?
+Hibernate: 
+    update
+        t_linkman 
+    set
+        lkm_name=?,
+        lkm_gender=?,
+        lkm_phone=?,
+        clid=? 
+    where
+        lkm_id=?
+ -->
+ 
+ ```
  
  
  

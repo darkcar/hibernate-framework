@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+    
+ <hibernate-mapping>
+ 	<class name="com.liyiandxuegang.newentity.Customer" table="t_customer">
+ 		<id name="cid" column="cid"> 
+ 			<generator class="native"></generator>
+ 		</id>
+ 		<property name="custName" column="custName" />
+ 		<property name="custLevel" column="custLevel" />
+ 		<property name="custSource" column="custSource" />
+ 		<property name="custPhone" column="custPhone" />
+ 		<property name="custMobile" column="custMobile" />
+ 		
+ 		<!-- 
+ 			表示所有联系人， 使用set标签
+ 			使用set标签表示所有联系人
+ 			set标签里面有name属性：
+ 				属性值写在客户实体类里面表示联系人的set集合名称
+ 			cascade: 表示级连保存 
+ 			inverse: default false - needs to maintain the relation
+ 		-->
+ 		<set name="setLinkMans" cascade="save-update, delete" inverse="true">
+ 			<!-- 
+ 				hibernate中，双向维护外健，在一和多的地方都需要配置外健。 
+ 				key中column值就是外键名称。
+ 			-->
+ 			<key column="clid" />
+ 			<one-to-many class="com.liyiandxuegang.newentity.LinkMan"/>
+ 		</set>
+ 	</class>
+ </hibernate-mapping>
