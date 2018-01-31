@@ -1142,10 +1142,32 @@ Hibernate:
  
  3. 多对多删除
  
+ 类似于一对多的操作，在set标签进行配置，添加cascade值delete，然后在程序中进行删除。(一般不用这么删除)
+ 
  4. 维护第三张表
  
+ 用户和角色是多对多关系，维护关系通过第三张表维护。
  
+ * 赋给某个用户某个角色
  
+ ```java
+ // Add one role to one user
+User user = session.get(User.class, 1);
+Role role = session.get(Role.class, 3);
+			
+user.getSetRoles().add(role);
+ ```
+
+ * 删除某个用户某个角色
+ 
+ ```java
+ // Add one role to one user
+User user = session.get(User.class, 2);
+Role role = session.get(Role.class, 3);
+
+// remove the role			
+user.getSetRoles().remove(role);
+ ```
  
  
  

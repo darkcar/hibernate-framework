@@ -61,4 +61,54 @@ public class HibernateManytoMany {
 		}
 	}
 	
+	
+	@Test
+	public void test1() {
+		SessionFactory sessionFactory = null;
+		Session session = null;
+		Transaction transaction = null;
+		try {
+			sessionFactory = HibernateUtils.getSessionFactory();
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
+		
+			// Add one role to one user
+			User user = session.get(User.class, 1);
+			Role role = session.get(Role.class, 3);
+			
+			user.getSetRoles().add(role);
+			
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+		} finally {
+			session.close();
+			sessionFactory.close();
+		}
+	}
+	
+	@Test
+	public void test2() {
+		SessionFactory sessionFactory = null;
+		Session session = null;
+		Transaction transaction = null;
+		try {
+			sessionFactory = HibernateUtils.getSessionFactory();
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
+		
+			// Add one role to one user
+			User user = session.get(User.class, 2);
+			Role role = session.get(Role.class, 3);
+			
+			user.getSetRoles().remove(role);
+			
+			transaction.commit();
+		} catch (Exception e) {
+			transaction.rollback();
+		} finally {
+			session.close();
+			sessionFactory.close();
+		}
+	}
 }
