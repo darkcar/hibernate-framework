@@ -1175,15 +1175,61 @@ user.getSetRoles().remove(role);
  
 1. 根据id查询某个客户，再查询这个客户里面所有的数据
 
-
-
  ## 2. OID query
 
 1. 根据id查询某一条记录，返回对象
 
+```java
+public class HibernateQuery {
+	@Test
+	public void test() {
+		SessionFactory sessionFactory = null;
+		Session session = null;
+		Transaction transaction = null;
+		try {
+			
+			sessionFactory = HibernateUtils.getSessionFactory();
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
+			
+			Customer customer = session.get(Customer.class, 1);
+			Set<LinkMan> linkMans = customer.getSetLinkMans();
+			System.out.println(linkMans.size());
+			
+			transaction.commit();
+		} catch (Exception e) {
+			// TODO: handle exception
+		} finally {
+			session.close();
+			sessionFactory.close();
+		}
+	}
+}
+```
+
  ## 3. hql query
 
+Hibernate Query Language: one sql statement from Hibernate.
+
+HQL vs. SQL: 普通sql操作数据库表和字段，hql操作实体类和属性。
+
 1. Query对象，写hql语句实现查询
+ 
+ ```java
+ // query all customers: from Entity class name
+Query query = session.createQuery("from Customer");
+// get result
+List<Customer> resultCustomers = query.list();
+for(Customer customer : resultCustomers) {
+	System.out.println(customer.getCid() + ", " + customer.getCustName());
+}
+``` 
+ 
+ 2. Conditional query: from Entity name where property name =? and  Video #4
+ 
+ 
+ 
+ 3. Query with 
  
  ## 4. QBC query
 
