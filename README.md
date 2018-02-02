@@ -1225,16 +1225,164 @@ for(Customer customer : resultCustomers) {
 }
 ``` 
  
- 2. Conditional query: from Entity name where property name =? and  Video #4
+ 2. Conditional query: from Entity name where property name =? and  ...
  
+ ```java
+ // query all customers: from Entity class name
+Query query = session.createQuery("from Customer where cid=? and custName=?");
+			
+// set condition value: int: position; args: value
+query.setParameter(0, 2);
+query.setParameter(1, "SGI CANADA");
+ ```
  
+ 3. Query with order
  
- 3. Query with 
+ SELECT * FROM t_customer  ORDER BY cid DESC;
+ 
+ ```java
+Query query = session.createQuery("from Customer order by cid desc");
+List<Customer> customers = query.list();
+
+/*
+Hibernate: 
+    select
+        customer0_.cid as cid1_0_,
+        customer0_.custName as custName2_0_,
+        customer0_.custLevel as custLeve3_0_,
+        customer0_.custSource as custSour4_0_,
+        customer0_.custPhone as custPhon5_0_,
+        customer0_.custMobile as custMobi6_0_ 
+    from
+        t_customer customer0_ 
+    order by
+        customer0_.cid desc
+*/
+ ```
+
+4. Query with pagination
+
+Query has two functions:  setFirstResult(0) and setMaxResults(3);
+
+```java
+Query query = session.createQuery("from Customer");
+query.setFirstResult(0); // start 
+query.setMaxResults(1); // end
+```
+ 
+ 5.  Query with Project (get part of the value, not all the value of the fields)
+ 
+ ```java
+Query query = session.createQuery("select custName from Customer");
+List<Object> customers = query.list();
+for(Object customer : customers) {
+	System.out.println("Customer: " + customer);
+}
+ ```
+ 
+ 6. Query with aggregation functions (count, sum, avg, max, min)
+
+```java
+Query query = session.createQuery("select count(*) from Customer");
+Object obj = query.uniqueResult(); // if only one result, you can use uniqueResult()
+System.out.println("Total customer: " + obj.intValue());
+``` 
  
  ## 4. QBC query
 
-1. Criteria 对象
+不需要写sQL或者HQL语句，使用方法实现；
+
+1. Query all result
+
+```java
+Criteria criteria = session.createCriteria(Customer.class);
+List<Customer> customers = criteria.list();
+```
+
+2. Query with conditions
+
+```java
+Criteria criteria = session.createCriteria(Customer.class);
+// add restrictions
+criteria.add(Restrictions.eq("cid", 1));
+criteria.add(Restrictions.eq("custName", "SGI"));
+
+/*
+SQL 
+Hibernate: 
+    select
+        this_.cid as cid1_0_0_,
+        this_.custName as custName2_0_0_,
+        this_.custLevel as custLeve3_0_0_,
+        this_.custSource as custSour4_0_0_,
+        this_.custPhone as custPhon5_0_0_,
+        this_.custMobile as custMobi6_0_0_ 
+    from
+        t_customer this_ 
+    where
+        this_.cid=? 
+        and this_.custName=?
+*/
+```
  
+ like condition:
+ 
+ ```java
+ Criteria criteria = session.createCriteria(Customer.class);
+criteria.add(Restrictions.like("custName", "%CANA%"));
+``` 
+
+3. QBC with Order
+
+```java
+Criteria criteria = session.createCriteria(Customer.class);
+criteria.addOrder(Order.desc("cid"));
+```
+
+4. QBC with pagination
+
+Start position = (current page - 1) * perpageamt;
+
+```java
+Criteria criteria = session.createCriteria(Customer.class);
+criteria.setFirstResult(1);
+criteria.setMaxResults(1);
+```
+
+5. QBC with Stats
+
+```java
+Criteria criteria = session.createCriteria(Customer.class);
+criteria.setProjection(Projections.rowCount());
+Object count  = criteria.uniqueResult();
+System.out.println(((Long)count).intValue());
+```
+
+(1) Projections class has batch of functions. (2) Conn't conver obj to int directly. 
+
+6. QBC query offline
+
+Offline query: 
+应用场景：
+
+servlet调用service，service调用dao： dao里面对数据库操作，而使用hibernate框架时，调用session里面的方法，实现功能。
+
+如果在逻辑层拼接条件时，可以使用这种方式来实现
+
+
+```java
+// Create detachedCriteria class
+DetachedCriteria detachedCriteria = DetachedCriteria.forClass(Customer.class);
+// executable session
+Criteria criteria = detachedCriteria.getExecutableCriteria(session);
+			
+List<Customer> list = criteria.list();
+for(Customer customer : list) {
+	System.out.println("Customer: " + customer.getCid() + ", " + customer.getCustName());
+}
+```
+
+
  ## 5. local sql query
 
 1. SQLQuery对象，使用普通sql实现查询 

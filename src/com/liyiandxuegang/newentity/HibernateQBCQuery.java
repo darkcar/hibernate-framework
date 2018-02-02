@@ -1,43 +1,24 @@
 package com.liyiandxuegang.newentity;
 
 import java.util.List;
-import java.util.Set;
 
-import org.hibernate.Query;
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projection;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.junit.Test;
 
 import com.liyiandxuegang.utils.HibernateUtils;
 
-public class HibernateQuery {
+public class HibernateQBCQuery {
+
 	@Test
-	public void test() {
-		SessionFactory sessionFactory = null;
-		Session session = null;
-		Transaction transaction = null;
-		try {
-			
-			sessionFactory = HibernateUtils.getSessionFactory();
-			session = sessionFactory.openSession();
-			transaction = session.beginTransaction();
-			
-			Customer customer = session.get(Customer.class, 1);
-			Set<LinkMan> linkMans = customer.getSetLinkMans();
-			System.out.println(linkMans.size());
-			
-			transaction.commit();
-		} catch (Exception e) {
-			// TODO: handle exception
-		} finally {
-			session.close();
-			sessionFactory.close();
-		}
-	}
-	
-	@Test
-	public void testHQL() {
+	public void testQBC() {
 		SessionFactory sessionFactory = null;
 		Session session = null;
 		Transaction transaction = null;
@@ -46,49 +27,11 @@ public class HibernateQuery {
 			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
 			
-			// query all customers: from Entity class name
-			Query query = session.createQuery("from Customer");
-			// get result
-			List<Customer> resultCustomers = query.list();
-			for(Customer customer : resultCustomers) {
-				System.out.println(customer.getCid() + ", " + customer.getCustName());
-			}
-			
-			transaction.commit();
-		} catch (Exception e) {
-			// TODO: handle exception
-		} finally {
-			session.close();
-			sessionFactory.close();
-		}
-	}
-	
-	@Test
-	public void testHQLCond() {
-		SessionFactory sessionFactory = null;
-		Session session = null;
-		Transaction transaction = null;
-		try {
-			sessionFactory = HibernateUtils.getSessionFactory();
-			session = sessionFactory.openSession();
-			transaction = session.beginTransaction();
-			
-			// query all customers: from Entity class name
-			Query query = session.createQuery("from Customer where cid=? and custName=?");
-			
-			// set condition value: int: position; args: value
-			query.setParameter(0, 2);
-			query.setParameter(1, "SGI CANADA");
-			
-			// 
-			query = session.createQuery("from Customer where custName like %CANA%");
-			// 
-			// GET THE VAULE
-			List<Customer> customers = query.list();
+			Criteria criteria = session.createCriteria(Customer.class);
+			List<Customer> customers = criteria.list();
 			for(Customer customer : customers) {
-				System.out.println("Customer: " + customer.getCustName());
+				System.out.println("Customer: " + customer.getCid() + ", " + customer.getCustName());
 			}
-			
 			transaction.commit();
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -98,9 +41,8 @@ public class HibernateQuery {
 		}
 	}
 	
-	
 	@Test
-	public void testHQLOrder() {
+	public void testQBCCondition() {
 		SessionFactory sessionFactory = null;
 		Session session = null;
 		Transaction transaction = null;
@@ -109,13 +51,12 @@ public class HibernateQuery {
 			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
 			
-			Query query = session.createQuery("from Customer order by cid desc");
-			List<Customer> customers = query.list();
-			
+			Criteria criteria = session.createCriteria(Customer.class);
+			criteria.add(Restrictions.like("custName", "%CANA%"));
+			List<Customer> customers = criteria.list();
 			for(Customer customer : customers) {
-				System.out.println(customer.getCid() + ", " + customer.getCustName());
+				System.out.println("Customer: " + customer.getCid() + ", " + customer.getCustName());
 			}
-			
 			transaction.commit();
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -126,7 +67,7 @@ public class HibernateQuery {
 	}
 	
 	@Test
-	public void testHQLPagination() {
+	public void testQBCQuery() {
 		SessionFactory sessionFactory = null;
 		Session session = null;
 		Transaction transaction = null;
@@ -135,14 +76,39 @@ public class HibernateQuery {
 			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
 			
-			Query query = session.createQuery("from Customer");
-			query.setFirstResult(0); // start 
-			query.setMaxResults(1); // end
-			List<Customer> customers = query.list();
+			Criteria criteria = session.createCriteria(Customer.class);
+			criteria.addOrder(Order.desc("cid"));
+			List<Customer> customers = criteria.list();
 			for(Customer customer : customers) {
-				System.out.println("Customer: " + customer.getCustName());
+				System.out.println("Customer: " + customer.getCid() + ", " + customer.getCustName());
 			}
+			transaction.commit();
+		} catch (Exception e) {
+			// TODO: handle exception
+		} finally {
+			session.close();
+			sessionFactory.close();
+		}
+	}
+	
+	
+	@Test
+	public void testQBCPagination() {
+		SessionFactory sessionFactory = null;
+		Session session = null;
+		Transaction transaction = null;
+		try {
+			sessionFactory = HibernateUtils.getSessionFactory();
+			session = sessionFactory.openSession();
+			transaction = session.beginTransaction();
 			
+			Criteria criteria = session.createCriteria(Customer.class);
+			criteria.setFirstResult(1);
+			criteria.setMaxResults(1);
+			List<Customer> customers = criteria.list();
+			for(Customer customer : customers) {
+				System.out.println("Customer: " + customer.getCid() + ", " + customer.getCustName());
+			}
 			transaction.commit();
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -153,7 +119,7 @@ public class HibernateQuery {
 	}
 	
 	@Test
-	public void testHQLProjection() {
+	public void testQBCStats() {
 		SessionFactory sessionFactory = null;
 		Session session = null;
 		Transaction transaction = null;
@@ -162,12 +128,14 @@ public class HibernateQuery {
 			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
 			
-			Query query = session.createQuery("select custName from Customer");
-			List<Object> customers = query.list();
-			for(Object customer : customers) {
-				System.out.println("Customer: " + customer);
-			}
-			
+			Criteria criteria = session.createCriteria(Customer.class);
+			criteria.setProjection(Projections.rowCount());
+			Object count  = criteria.uniqueResult();
+			System.out.println(((Long)count).intValue());
+//			List<Customer> customers = criteria.list();
+//			for(Customer customer : customers) {
+//				System.out.println("Customer: " + customer.getCid() + ", " + customer.getCustName());
+//			}
 			transaction.commit();
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -177,8 +145,10 @@ public class HibernateQuery {
 		}
 	}
 	
+	
 	@Test
-	public void testHQLFunctions() {
+	public void testQBCOffline() {
+		
 		SessionFactory sessionFactory = null;
 		Session session = null;
 		Transaction transaction = null;
@@ -187,9 +157,15 @@ public class HibernateQuery {
 			session = sessionFactory.openSession();
 			transaction = session.beginTransaction();
 			
-			Query query = session.createQuery("select count(*) from Customer");
-			Object obj = query.uniqueResult();
-			System.out.println("Total customer: " + obj.toString());
+			// Create detachedCriteria class
+			DetachedCriteria detachedCriteria = DetachedCriteria.forClass(Customer.class);
+			// executable session
+			Criteria criteria = detachedCriteria.getExecutableCriteria(session);
+			
+			List<Customer> list = criteria.list();
+			for(Customer customer : list) {
+				System.out.println("Customer: " + customer.getCid() + ", " + customer.getCustName());
+			}
 			
 			transaction.commit();
 		} catch (Exception e) {
@@ -200,20 +176,6 @@ public class HibernateQuery {
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
