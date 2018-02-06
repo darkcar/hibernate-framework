@@ -1382,10 +1382,5 @@ for(Customer customer : list) {
 }
 ```
 
-
- ## 5. local sql query
-
-1. SQLQuery对象，使用普通sql实现查询 
- 
  
  
